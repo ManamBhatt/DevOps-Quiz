@@ -1,0 +1,44 @@
+name: Build, Test, and Deploy
+
+on:
+  push:
+    branches:
+      - main  # Change this to your default branch if it's not 'main'
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'  # Default Node.js version
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: npm install
+
+    # Step 4: Run linting
+    - name: Run ESLint
+      run: npm run lint  # Assumes you have a lint script in package.json
+
+    # Step 5: Run unit tests
+    - name: Run unit tests
+      run: npm test  # Assumes you have a test script in package.json
+
+    # Step 6: Build the project
+    - name: Build project
+      run: npm run build  # Assumes Vite's build script is defined in package.json
+
+    # Step 7: Deploy to GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist  # Vite outputs to the 'dist' directory by default
