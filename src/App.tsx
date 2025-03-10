@@ -1,43 +1,22 @@
 import React, { useState } from 'react';
-import { Terminal, BookOpen, GraduationCap, Menu, X, Send, ArrowLeft } from 'lucide-react';
+import { Terminal, BookOpen, GraduationCap, Menu, X } from 'lucide-react';
 import StudyMaterials from './components/StudyMaterials';
 import TopicList from './components/TopicList';
 import TopicContent from './components/TopicContent';
 import QuizTopics from './components/QuizTopics';
 import Quiz from './components/Quiz';
-
-type Message = {
-  type: 'user' | 'assistant';
-  content: string;
-};
+import Chat from './components/Chat';
 
 type StudyView = 'main' | 'topics' | 'content';
 type QuizView = 'topics' | 'quiz';
 
 function App() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      type: 'assistant',
-      content: 'Welcome to DevOps Learning Hub! How can I help you learn today?'
-    }
-  ]);
-  const [input, setInput] = useState('');
   const [activeTab, setActiveTab] = useState<'chat' | 'study' | 'quiz'>('chat');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [studyView, setStudyView] = useState<StudyView>('main');
   const [quizView, setQuizView] = useState<QuizView>('topics');
   const [selectedSection, setSelectedSection] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-    
-    setMessages(prev => [...prev, 
-      { type: 'user', content: input },
-      { type: 'assistant', content: 'This is a demo response. In a real application, this would be connected to a backend service.' }
-    ]);
-    setInput('');
-  };
 
   const handleSectionClick = (section: string) => {
     setSelectedSection(section);
@@ -86,7 +65,7 @@ function App() {
               }`}
             >
               <Terminal className="h-5 w-5" />
-              <span>Chat DevOPs Expert AI</span>
+              <span>Chat</span>
             </button>
             <button
               onClick={() => {
@@ -132,7 +111,6 @@ function App() {
                 onClick={handleBack}
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
               >
-                <ArrowLeft className="h-5 w-5" />
                 <span>Back</span>
               </button>
             )}
@@ -146,32 +124,11 @@ function App() {
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto p-4">
-          {activeTab === 'chat' && (
-            <div className="max-w-3xl mx-auto">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-4 ${
-                    message.type === 'user' ? 'flex justify-end' : 'flex justify-start'
-                  }`}
-                >
-                  <div
-                    className={`p-3 rounded-lg max-w-[80%] ${
-                      message.type === 'user'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white border border-gray-200'
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="flex-1 overflow-auto">
+          {activeTab === 'chat' && <Chat />}
 
           {activeTab === 'study' && (
-            <>
+            <div className="p-4">
               {studyView === 'main' && (
                 <StudyMaterials onSectionClick={handleSectionClick} />
               )}
@@ -187,43 +144,20 @@ function App() {
                   topic={selectedTopic}
                 />
               )}
-            </>
+            </div>
           )}
 
           {activeTab === 'quiz' && (
-            <>
+            <div className="p-4">
               {quizView === 'topics' && (
                 <QuizTopics onTopicSelect={handleQuizTopicSelect} />
               )}
               {quizView === 'quiz' && (
                 <Quiz topic={selectedTopic} />
               )}
-            </>
+            </div>
           )}
         </div>
-
-        {/* Input Area for Chat */}
-        {activeTab === 'chat' && (
-          <div className="border-t border-gray-200 p-4">
-            <div className="max-w-3xl mx-auto flex space-x-4">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask anything about DevOps..."
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-              />
-              <button
-                onClick={handleSend}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center space-x-2"
-              >
-                <Send className="h-5 w-5" />
-                <span>Send</span>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
